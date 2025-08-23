@@ -4,7 +4,9 @@ import com.ms.order_service.model.Order;
 import com.ms.order_service.model.OrderRequest;
 import com.ms.order_service.model.OrderResponse;
 import jakarta.validation.Valid;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OrderMapper {
     public Order toOrder(@Valid OrderRequest request) {
         return Order.builder()

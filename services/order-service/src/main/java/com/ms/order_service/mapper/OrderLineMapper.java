@@ -4,7 +4,9 @@ import com.ms.order_service.model.Order;
 import com.ms.order_service.model.OrderLine;
 import com.ms.order_service.model.OrderLineRequest;
 import com.ms.order_service.model.OrderLineResponse;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OrderLineMapper {
     public OrderLine toOrderLine(OrderLineRequest orderLineRequest) {
         return OrderLine.builder()

@@ -1,6 +1,7 @@
 package com.ms.order_service.service;
 
 import com.ms.order_service.clients.CustomerClient;
+import com.ms.order_service.clients.PaymentClient;
 import com.ms.order_service.clients.ProductClient;
 import com.ms.order_service.exception.BusinessException;
 import com.ms.order_service.kafka.OrderProducer;
@@ -25,6 +26,7 @@ public class OrderService {
     private final OrderMapper mapper;
     private final OrderLineService orderLineService;
     private final OrderProducer producer;
+    private final PaymentClient paymentClient;
 
     public Long createOrder(@Valid OrderRequest request) {
         var customer = customerClient.getCustomerById(request.customerId())
@@ -45,7 +47,14 @@ public class OrderService {
             );
         }
 
-        // todo Start payment process
+        var paymentRequest = new PaymentRequest(
+                request.amount(),
+                request.paymentMethod(),
+                order.getId(),
+                request.reference(),
+                customer
+        );
+        paymentClient.requestOrderPayment(paymentRequest);
 
         producer.sendOrderConfirmation(
                 new OrderConfirmation(
