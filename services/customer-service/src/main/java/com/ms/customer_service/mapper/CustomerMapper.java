@@ -15,12 +15,12 @@ public class CustomerMapper {
         return Customer.builder()
                 .id(request.id())
                 .firstName(request.firstName())
-                .lastname(request.lastName())
+                .lastName(request.lastName())
                 .email(request.email())
                 .address(request.address()).build();
     }
 
     public CustomerResponse fromCustomer(Customer customer) {
-        return new CustomerResponse(customer.getId(), customer.getFirstName(), customer.getLastname(), customer.getEmail(), customer.getAddress());
+        return new CustomerResponse(customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getEmail(), customer.getAddress());
     }
 }

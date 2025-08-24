@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,10 +30,14 @@ public class OrderService {
     private final PaymentClient paymentClient;
 
     public Long createOrder(@Valid OrderRequest request) {
+        BigDecimal totalAmount = BigDecimal.valueOf(0.0);
         var customer = customerClient.getCustomerById(request.customerId())
                 .orElseThrow(() -> new BusinessException("cannot create order :: No customer exists for this customerId :" + request.customerId()));
 
         var purchaseProducts = productClient.purchaseProducts(request.products());
+        for(PurchaseResponse purchaseResponse : purchaseProducts){
+            totalAmount = totalAmount.add((purchaseResponse.price().multiply(BigDecimal.valueOf(purchaseResponse.quantity()))));
+        }
 
         var order = orderRepository.save(mapper.toOrder(request));
 
@@ -48,7 +53,7 @@ public class OrderService {
         }
 
         var paymentRequest = new PaymentRequest(
-                request.amount(),
+                totalAmount,
                 request.paymentMethod(),
                 order.getId(),
                 request.reference(),
@@ -59,7 +64,7 @@ public class OrderService {
         producer.sendOrderConfirmation(
                 new OrderConfirmation(
                         request.reference(),
-                        request.amount(),
+                        totalAmount,
                         request.paymentMethod(),
                         customer,
                         purchaseProducts
