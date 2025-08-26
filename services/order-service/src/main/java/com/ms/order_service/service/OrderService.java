@@ -29,12 +29,12 @@ public class OrderService {
     private final OrderProducer producer;
     private final PaymentClient paymentClient;
 
-    public Long createOrder(@Valid OrderRequest request) {
+    public Long createOrder(@Valid OrderRequest request, String authHeader) {
         BigDecimal totalAmount = BigDecimal.valueOf(0.0);
         var customer = customerClient.getCustomerById(request.customerId())
                 .orElseThrow(() -> new BusinessException("cannot create order :: No customer exists for this customerId :" + request.customerId()));
 
-        var purchaseProducts = productClient.purchaseProducts(request.products());
+        var purchaseProducts = productClient .purchaseProducts(request.products(), authHeader);
         for(PurchaseResponse purchaseResponse : purchaseProducts){
             totalAmount = totalAmount.add((purchaseResponse.price().multiply(BigDecimal.valueOf(purchaseResponse.quantity()))));
         }

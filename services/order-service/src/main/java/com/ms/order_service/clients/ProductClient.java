@@ -25,9 +25,10 @@ public class ProductClient {
     private String productUrl;
     private final RestTemplate restTemplate;
 
-    public List<PurchaseResponse> purchaseProducts(List<PurchaseRequest> requests){
+    public List<PurchaseResponse> purchaseProducts(List<PurchaseRequest> requests, String authorizationHeader){
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        headers.set("Authorization", authorizationHeader);
 
         HttpEntity<List<PurchaseRequest>> requestEntity = new HttpEntity<>(requests, headers);
         ParameterizedTypeReference<List<PurchaseResponse>> responseType = new ParameterizedTypeReference<List<PurchaseResponse>>() {};
